@@ -1,1 +1,1 @@
-Oi xis up!!!
+Assistente de voz feito em python que automatiza tarefas em "MEU" computador feito usando a biblioteca VOSK.
