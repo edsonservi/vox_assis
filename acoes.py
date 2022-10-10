@@ -9,8 +9,8 @@ from time import sleep
 
 def clima(usuario):
     options = Options()
-    # options.add_argument('headless')
-    options.add_argument('--start-maximized')
+    # options.add_argument('--headless')
+    # options.add_argument('--start-maximized')
     nav = webdriver.Chrome(options=options)
     nav.get('https://www.msn.com/pt-br/clima/forecast/in-S%C3%A3o-Jos%C3%A9,Santa-Catarina')
     temperatura = nav.find_element('xpath', '//*[@id="OverviewCurrentTemperature"]/a').text
@@ -50,9 +50,9 @@ def musica():
 
     escolha = f'F:\\Musica\\{choice(musicas)}'
     janela = gw.getActiveWindow()
-    sleep(3)
+    sleep(2)
     os.startfile(escolha)
-    sleep(1)
+    sleep(2)
     janela.activate()
 
 
