@@ -1,40 +1,42 @@
-from vosk import Model, KaldiRecognizer
-import pyaudio
-import pyttsx3
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 
-USUARIO = 'Edson'
 
-# CONFIGURA GLOBAIS E INICIA OS SERVIÇOS
-model = Model(r'F:\Programacao\Voskmodels\vosk-model-small-pt-0.3')
-voz = KaldiRecognizer(model, 16000)
-mic = pyaudio.PyAudio()
-stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
-stream.start_stream()
-falar = pyttsx3.init()
+def clima(usuario):
+    options = Options()
+    options.add_argument('--headless')
+    nav = webdriver.Chrome(options=options)
+    nav.get('http:www.google.com')
+    caminho = '/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input'
+    nav.find_element('xpath', caminho).send_keys('clima São José - SC', Keys.ENTER)
+    temperatura = nav.find_element('xpath', '//*[@id="wob_tm"]').text
+    vento = nav.find_element('xpath', '//*[@id="wob_ws"]').text
+    umidade = nav.find_element('xpath', '//*[@id="wob_hm"]').text
+    chuva = nav.find_element('xpath', '//*[@id="wob_pp"]').text
+    local = nav.find_element('xpath', '//*[@id="wob_loc"]').text
+    local = local.split(',')
+    nav.close()
 
-# LOOP PARA MANTER O ASSISTENTE "SEMPRE OUVINDO"
-while True:
-    data = stream.read(4096, exception_on_overflow=False)
-    if voz.AcceptWaveform(data):
-        texto = voz.Result()
-        texto = texto[14:-3].lower()
-        if texto != '':
-            if "assis" in texto:
-                testar = texto.split(' ')
-                clima = ['temperatura', 'previsão do tempo', 'clima']
-                errado = ['veado', 'puta', 'caralho', 'cú', 'filha da puta', 'viado']
-                if 'música' in testar and 'tocar' in testar:
-                    falar.say(texto)
-                    falar.runAndWait()
-                elif 'música' in testar and 'fechar' in testar:
-                    falar.say(texto)
-                    falar.runAndWait()
-                elif 'bom' in testar and 'dia' in testar \
-                        or 'boa' in testar and 'tarde' in testar \
-                        or 'boa' in testar and 'noite' in testar \
-                        or 'olá' in testar\
-                        or 'oi' in testar:
-                    falar.say('Deu certo!!')
-                    falar.runAndWait()
-                    falar.say(texto)
-                    falar.runAndWait()
+    frase = f'{usuario}, em {local[1]} A temperatura é de {temperatura} graus, ' \
+            f'há {chuva} de chance de chover, o ar esta com ' \
+            f'{umidade} de umidade e o vento esta soprando a {vento}.'
+    return frase
+
+
+print(clima('Edson'))
+"""
+temperatura = nav.find_element('xpath', '//*[@id="OverviewCurrentTemperature"]/a').text
+temperatura = temperatura.replace("°C", "")
+temperatura = temperatura.replace(" ", "")
+temperatura = temperatura.replace("\n", "")
+temperatura = int(temperatura)
+estado = nav.find_element('xpath', '//*[@id="OverviewCurrentTemperature"]/div/div[1]').text
+chuva = nav.find_element('xpath', '//*[@id="ForecastDays"]/div/ul/li[1]/button/span/'
+                                  'div/div/div[2]/div[2]/div[2]/div/span[2]').text
+chuva = int(chuva.replace("%", ""))
+nav.quit()
+frase = f'{usuario}, A temperatura é de {temperatura} graus, está {estado} e há {chuva} ' \
+        f'porcento de chances de chover.'
+return frase
+"""
